@@ -10,6 +10,7 @@ const commentRoutes=require("./routes/Comment")
 const memberRoutes=require("./routes/Member")
 const projectRoutes=require("./routes/Project")
 const ticketRoutes=require("./routes/Ticket")
+const authRoutes=require("./routes/Auth")
 
 
 // database connection
@@ -29,6 +30,7 @@ server.use("/comment",commentRoutes)
 server.use("/member",memberRoutes)
 server.use("/project",projectRoutes)
 server.use("/ticket",ticketRoutes)
+server.use("/auth",authRoutes)
 
 
 server.get("/",(req,res)=>{
