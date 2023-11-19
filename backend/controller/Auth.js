@@ -1,8 +1,10 @@
 require('dotenv').config()
 const Admin = require("../model/Admin");
+const Member = require("../model/Member");
 const jwt=require("jsonwebtoken")
 const bcrypt=require('bcryptjs');
 const { sanitizeUser } = require("../common/common");
+
 
 
 
@@ -70,6 +72,23 @@ exports.login=async(req,res)=>{
     }
 }
 
+exports.loginMember=async(req,res)=>{
+    try {
+        const existingMember=await Member.findOne({email:req.body.email})
+        if(!existingMember){
+            return res.status(400).json({"message":"Invalid Credentails"})
+        }
+        if(existingMember && req.body.password===existingMember.password){
+            const secureInfo=sanitizeUser(existingMember)
+            return res.status(200).json(secureInfo)
+        }
+        res.status(400).json({"message":"Invalid Credentails"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({"message":"Some error occured, please try later"})
+    }
+}
+
 exports.checkAuth=async(req,res)=>{
     try {
         if(req.user){
@@ -89,5 +108,5 @@ exports.logout=async(req,res)=>{
         expires:new Date(Date.now()),
         httpOnly:true
     })
-    res.status(200).json({"message":"logout successful"})
+    res.status(200).json({"message":"logout successfull"})
 }
