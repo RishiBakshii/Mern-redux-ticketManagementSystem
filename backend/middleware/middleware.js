@@ -9,10 +9,12 @@ exports.verifyToken=async(req,res,next)=>{
         }
         const decodedInfo=jwt.verify(token,process.env.SECRET_KEY)
 
-        if(decodedInfo._id && decodedInfo.email){
-            req.user=decodedInfo
+        if(decodedInfo._id && decodedInfo.email && decodedInfo.role){
+            req.user={_id:decodedInfo._id,email:decodedInfo.email,role:decodedInfo.role}
             next()
         }
+
+        // return res.status(401).json({ "message": "Token missing, please login again" });
 
     } catch (error) {
         console.log(error)

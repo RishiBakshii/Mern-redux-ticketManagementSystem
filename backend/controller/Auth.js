@@ -22,8 +22,7 @@ exports.signup=async(req,res)=>{
         const created=new Admin(req.body)
         await created.save()
 
-        const secureInfo=sanitizeUser(created)
-
+        const secureInfo={...sanitizeUser(created),role:'admin'}
         const token=jwt.sign(secureInfo,process.env.SECRET_KEY,{expiresIn:"7d"})
 
         res.cookie('token',token,{
@@ -38,7 +37,6 @@ exports.signup=async(req,res)=>{
         console.log(error)
         res.status(500).json({'message':"Some error occured, please try again later"})
     }
-
 }
 
 exports.login=async(req,res)=>{
@@ -50,7 +48,7 @@ exports.login=async(req,res)=>{
         }
 
         else if(existingUser && (await bcrypt.compare(req.body.password,existingUser.password))){
-            const secureInfo=sanitizeUser(existingUser)
+            const secureInfo={...sanitizeUser(existingUser),role:"admin"}
 
             const token=jwt.sign(secureInfo,process.env.SECRET_KEY,{expiresIn:"7d"})
     
@@ -79,7 +77,14 @@ exports.loginMember=async(req,res)=>{
             return res.status(400).json({"message":"Invalid Credentails"})
         }
         if(existingMember && req.body.password===existingMember.password){
-            const secureInfo=sanitizeUser(existingMember)
+            const secureInfo={...sanitizeUser(existingMember),role:'member'}
+            const token=jwt.sign(secureInfo,process.env.SECRET_KEY,{expiresIn:"7d"})
+            res.cookie('token',token,{
+                httpOnly:true,
+                sameSite:"Lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            })
+            res.status(200).json(secureInfo)
             return res.status(200).json(secureInfo)
         }
         res.status(400).json({"message":"Invalid Credentails"})
