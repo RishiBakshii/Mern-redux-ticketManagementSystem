@@ -26,6 +26,18 @@ exports.getByAdminId=async(req,res)=>{
     }
 }
 
+exports.getById=async(req,res)=>{
+    try {
+        const {id}=req.params
+        const fetched=await Project.findById(id)
+        res.status(200).json(fetched)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({"message":"Error Fetching details"})
+
+    }
+}
+
 // update
 exports.updateById=async(req,res)=>{
     try {
